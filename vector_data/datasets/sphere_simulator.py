@@ -1,5 +1,7 @@
 #! /usr/bin/env python
-
+#############
+## data simulator in the structure necessary for our code base 
+#############
 import numpy as np
 from scipy.stats import norm
 import logging
@@ -10,18 +12,18 @@ import torch
 
 logger = logging.getLogger(__name__)
 
-
 class SphereSimulator(BaseSimulator):
     def __init__(self, latent_dim=2, data_dim=3, kappa=6.0, epsilon=0.,latent_distribution='mix_of_vonMises',noise_type='gaussian'):
         super().__init__()
-
+        
         self._latent_dim = latent_dim
         self._data_dim = data_dim
         self._epsilon = epsilon
         
         self._latent_distribution = latent_distribution
         self._noise_type = noise_type
-
+        
+        #parametes for the mixture density
         self.kappa = 6.0
         self.mu11 = 1*np.pi/4       
         self.mu12 = np.pi/2             #northpole
@@ -31,11 +33,10 @@ class SphereSimulator(BaseSimulator):
         self.mu32 = np.pi/2 
         self.mu41 = np.pi/4
         self.mu42 = 4*np.pi/3 
-        
-        self.first_sample = True
 
         assert data_dim > latent_dim
         
+    ##returning model informations##
     def latent_dist(self):
         return self._latent_distribution
     
@@ -53,29 +54,23 @@ class SphereSimulator(BaseSimulator):
 
     def latent_dim(self):
         return self._latent_dim
-
+    
     def parameter_dim(self):
         return None
 
-    def log_density(self, x, parameters=None, precise=False):
-        raise NotImplementedError
-
     def sample(self, n, parameters=None,mode='numpy'):
-        theta, phi = self._draw_z(n)
-        x = self._transform_z_to_x(theta,phi,mode='numpy')
+        theta, phi = self._draw_z(n)                        ##draw latent variables
+        x = self._transform_z_to_x(theta,phi,mode='numpy')  ##transform them into data space
         return x
 
-    def sample_ood(self, n, parameters=None):
-        x = self.sample(n)
-        noise = self._epsilon * np.random.normal(size=(n, 2))
-        return x + noise
-
+    # sample from manifold and generate noise
     def sample_and_noise(self,n,parameters=None, sig2 = 0.0, mode='numpy'):
         theta, phi = self._draw_z(n)
         x = self._transform_z_to_x(theta,phi,mode='numpy')
         noise = self.create_noise(x,theta,phi,sig2)
         return np.stack([x, noise],axis=-1)   
 
+    # noise creation
     def create_noise(self,x,theta,phi,sig2):
         if self._noise_type == 'gaussian':
             noise = np.sqrt(sig2 + self._epsilon**2) * np.random.randn(*x.shape)
@@ -84,9 +79,7 @@ class SphereSimulator(BaseSimulator):
         else: noise = np.zeros(*x.shape)
         return noise  
 
-    def distance_from_manifold(self, x):
-        raise NotImplementedError
-
+    #draw latent variables according to latent_distribution
     def _draw_z(self, n):
         if self._latent_distribution == 'mixture':
             n_samples = np.random.multinomial(n,[1/4]*4,size=1)
@@ -166,7 +159,7 @@ class SphereSimulator(BaseSimulator):
            
         return theta, phi
     
-    
+    #mapping from latent to data space
     def _transform_z_to_x(self, theta,phi, mode='train'):
         c, a = 0, 1
         d1x = (c + a*np.sin(theta)) * np.cos(phi)
@@ -178,6 +171,10 @@ class SphereSimulator(BaseSimulator):
             x = NumpyDataset(x, params)
         return x
     
+    ####Everything below this line is not necessary for this work and can be ignored/ deleted
+    def log_density(self, x, parameters=None, precise=False):
+        raise NotImplementedError
+        
     def _transform_z_to_x_nondeg(self, theta,phi, mode='train'):
         c, a = 0, 1
         d1x = -1*(c + a*np.sin(theta)) * np.cos(phi)
@@ -192,6 +189,9 @@ class SphereSimulator(BaseSimulator):
     def _transform_x_to_z(self, x):
         raise NotImplementedError
 
+    def distance_from_manifold(self, x):
+        raise NotImplementedError
+        
     def _density(self, data):
         theta = data[0]
         phi = data[1]
@@ -243,6 +243,11 @@ class SphereSimulator(BaseSimulator):
                 
         return probs
     
+    def sample_ood(self, n, parameters=None):
+        x = self.sample(n)
+        noise = self._epsilon * np.random.normal(size=(n, 2))
+        return x + noise
+    
     def generate_grid(self,n,mode='sphere'):
         theta = np.linspace(0, np.pi, n)
         phi = np.linspace(0, 2*np.pi, n)
@@ -263,7 +268,6 @@ class SphereSimulator(BaseSimulator):
         # jacobians[n-1,:]=1
         return data, latent, true_probs, jacobians, 1
         
-
     def calculate_sigma_bound(self,theta, phi): #theta=v, phi = u
         def circle_term_theta(z,alpha):
             return self.kappa * 4* (self.kappa*np.sin(2*(z-alpha))**2 - np.cos(2*(z-alpha)) )

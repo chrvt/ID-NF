@@ -12,3 +12,7 @@ Data from a gdrive folder can be automatically downloaded when specifying the ur
 Otherwise, the data can be manually added into [experiments/data/samples](experiments/data/samples) within a folder named by the dataset name. The training set must be saved as "train.npy" with shape (N,c,res,res) where N is the number of samples, c the number of channels, and  res the reoslution. The test set must be saved as "test.npy" with the same shape as the training set.
 
 In case you have problems with setting up your data, do not hesitate to contact us.
+
+Once your data generation is settled, you can train N=3 NFs and calculate the singular values on K samples using [cluster/train_flow_your_data.sh](cluster/train_flow_your_data.sh). We use the same architecture as for the StyleGan64d.
+
+If you want to reproduce our results on the StyleGan2d, StyleGan64d or CelebA dataset, run [cluster/train_flow_gan2d.sh](cluster/train_flow_gan2d.sh),  [cluster/train_flow_gan64d.sh](cluster/train_flow_gan64d.sh), or [cluster/train_flow_celeba.sh](cluster/train_flow_celeba.sh). 
