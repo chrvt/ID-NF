@@ -1,24 +1,32 @@
 ### Instructions for vector data
-To train your own vector data, you have two options: a) write your own dataset simulator (if you have access to the true data generating process) b) add your data to the data/your_data folder.
 
-for a): write your own dataset simulator and include it in [experiments/datasets](experiments/datasets). 
-The simulator must have the following methods:
+To estimte the ID of your vector dataset, use 
 
-+ latent_dist ... returning the latent distribution to sample from
-+ manifold ... returning the name of the manifold
-+ is_image ... determining if dataset is image
-+ data_dim ... returning the embedding space dimension
-+ latent_dim ... returning the latent space dimension
-+ def sample_and_noise ... creating an array of manifold data and noise
-+ def _draw_z  ... drawing a latent variable
-+ create_noise ... noise added to data while training
-+ _transform_z_to_x ... mapping from latent to data space
-+ sample ... returning only manifold data
+1. [my_vector_data_cluster.py](my_vector_data_cluster.py) which trains N NFs and calculates the singular values on K samples, 
+2. [estimate_d.py](estimate_d.py) which estimates the ID given the singular value evolution.
 
-See e.g. [experiments/datasets/sphere_simulator.py](experiments/datasets/sphere_simulator.py) as orientation.
+## Details for 1.
++ your data with name 'data_name' must be stored in "/data/data_name". The folder must contain a "train.npy" and "val.npy" numpy arrays of shape [n_samples,D] where n_samples reflects the number of training/ validation samples and D is the data dimensionality
++ the parameters model yielding the best performance on the validation set will be used for calculating the singular values
++ use the [estimate_d_train.sh](estimate_d_train.sh) shell script to train the NFs 
++ the following arguments must be specified:
+  - sig2_min ... min. noise magnitude
+  - sig2_max ... max. noise magnitude
+  - n_sigmas ... number of noise levels; important: number must align with number of arrays in [estimate_d_train.sh](estimate_d_train.sh) 
+  - dataset ... name of your dataset
+  
+  Block Neural Autoregressive Flows parameters
+  - n_hidden ...number of hidden layers 
+  - hidden_dim ... hidden dimension (must be multicative of args.data_dim)
+  
+  Training parameters
+  - N_epochs ... number of epochs
+  - batch_size ... number of samples used for 1 gradient step
+  Evaluation
+  - ID_samples ... number of samples to estimate ID on (must be <= batch size, otherwise evaluation part of the script must be modified accordingly)
+
+## Details for 2.
++ 
 
 In case you have problems with setting up your data, do not hesitate to contact us.
-
-Once your data generation is settled, you can train N NFs and calculate the singular values on K samples using [cluster/train_flow_your_data.sh](cluster/train_flow_your_data.sh). Note that the hiddem_dim input must be a multiple of datadim due the construction of BNAF.
-
-If you want to reproduce our results on the lolipop or sphere (D/2) data, run [cluster/train_flow_lolipop.sh](cluster/train_flow_lolipop.sh) or [cluster/train_flow_sphere.sh](cluster/train_flow_sphere.sh), respectively. Similarly, for the remaining datasets.
+s
