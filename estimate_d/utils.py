@@ -117,11 +117,15 @@ def ID_NF_estimator(sing_values,sigmas,datadim,mode='vector',latent_dim=2,plot=F
     ###################
 
     if mode == 'vector':
-        # in case of no intrinsic noise, off-manifold singular values will decline immediately such that decay onset might
-        # not reflect to decay; therefore, we add an artificial sigma measurment with the same value as the true last sigma
-        # singular value
+        # in case of no intrinsic noise in the data, off-manifold singular values will linearly decline (in log-space)
+        # such that decay onset can't be estimated; therefore, we add an artificial sigma measurment $\sigma_{-1}$
+        # with the same sing. value as for $\sigma_0$; decay onset will then be roughly at $\sigma_0$   
+        
         sigmas = np.insert(sigmas,0,sigmas[0] * 10**(-1))
         sing_values = np.insert(sing_values,0,sing_values[0,:],axis=0)
+                
+        # in case of intrinsic noise, the decay onset is after $\sigma_0$ such that this procedure will note change 
+        # the estimate of the decay onset
 
         # onsets of decay
         onsets = np.zeros(datadim)

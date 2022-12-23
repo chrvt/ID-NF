@@ -30,7 +30,7 @@ for k in range(n_sigmas-1):
 sing_values_batch = np.abs(np.random.randn(n_sigmas,batch_size,datadim))
 # in the paper, we find that averaging the sing. values across all batches
 # reduces noise in the estimate; however, if you are interested in a local estimator
-# continue, this is not necessary
+# set "local_estimator = True"
 
 local_estimator = False
 data_type = 'image'
