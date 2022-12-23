@@ -125,8 +125,8 @@ class StiefelSimulator(BaseSimulator):
         
         if self._latent_distribution == 'mixture':
             probs = 1/4* (np.exp(self.kappa*np.cos(theta_-self.mu1)) + np.exp(self.kappa*np.cos(theta_-self.mu2))
-                     +np.exp(self.kappa*np.cos(theta_-self.mu3)) + np.exp(self.kappa*np.cos(theta_-self.mu4))
-                      ) * (1/(2*np.pi*i0(self.kappa)))                
+                         +np.exp(self.kappa*np.cos(theta_-self.mu3)) + np.exp(self.kappa*np.cos(theta_-self.mu4))
+                         ) * (1/(2*np.pi*i0(self.kappa)))                
         return probs
     
     def generate_grid(self,n,mode='sphere'):
@@ -141,10 +141,27 @@ class StiefelSimulator(BaseSimulator):
         
         return data, latent, true_probs, jacobians, 1
     
-    def calculate_sigma_bound(self,u_, v_):
-        print('not implemented!')        
-        return np.zeros(*u_.shape) + 100000
+    def calculate_sigma_bound(self,theta_, v_=None):     
+        def circle_term(z,alpha):
+            return self.kappa *  (self.kappa*np.sin(z-alpha)**2 - np.cos(z-alpha) )
+       
+        def circle_term_phi(z,alpha):
+            return self.kappa * (self.kappa*np.sin(z-alpha)**2 - np.cos(z-alpha) )
+        
+        def jacobian(theta):                   
+            return np.sin(theta)
+        
+        def unimodal(theta,alpha):
+            return (1/4)*np.exp( self.kappa*np.cos(theta-alpha) ) * (1/(2*np.pi*i0(self.kappa)))
+       
+        if self._latent_distribution == 'mixture':
+            bound = 2 * self._density(theta_) / (  unimodal(theta_,self.mu1) * circle_term(theta_,self.mu1) / 2
+                                                  +unimodal(theta_,self.mu2) * circle_term(theta_,self.mu2) / 2
+                                                  +unimodal(theta_,self.mu3) * circle_term(theta_,self.mu3) / 2
+                                                  +unimodal(theta_,self.mu4) * circle_term(theta_,self.mu4) / 2
+                                                 )
+        return bound
     
     def calculate_gauss_curvature(self, z1, z2=None):        
-        return np.sqrt(2) * np.ones(*z1.shape)
+        return 1 * np.ones(*z1.shape)
     

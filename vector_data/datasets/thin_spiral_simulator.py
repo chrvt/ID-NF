@@ -135,7 +135,7 @@ class ThinSpiralSimulator(BaseSimulator):
     
     def generate_grid(self,n,mode='data_space'):
         multiplier = 1
-        z_ = np.linspace(0, 2.5, n) #[1:]
+        z_ = np.linspace(0, 2.5, n+1)[1:]
         # z = np.sqrt(z_exp ) * 540 * (2 * np.pi) / 360
         latent = z_ #[,np.array([0,1])]
         
@@ -146,7 +146,7 @@ class ThinSpiralSimulator(BaseSimulator):
         if mode == 'data_space':            
             data = self._transform_z_to_x(z_,mode='test')
         else: data = None
-        c1 = 540 * 2* np.pi / 360
+        c1 = 3 * np.pi 
         r = np.sqrt(z_) * c1
         jacobians = ((1+r**2)/r**2) * c1**4 / 36   
         # import pdb
@@ -155,14 +155,26 @@ class ThinSpiralSimulator(BaseSimulator):
         
     def calculate_sigma_bound(self,z,z2=None):
         if self._latent_distribution == 'exponential':
-            bound = 2*(3*np.pi*np.sqrt(z)) / ( 0.3**2 * (1+(3*np.pi*np.sqrt(z))**2) )
+            c1 = 3 * np.pi 
+            r = np.sqrt(z) * c1
+            jacobians = ((1+r**2)/r**2) * c1**4 / 36 
+            bound = 2/(0.3)**2 * jacobians  #2*(1+(3*np.pi*np.sqrt(z))**2) / ( 0.3**2 * (3*np.pi*np.sqrt(z))**2 *2.25*np.pi**4  )
         return bound
     
     def calculate_gauss_curvature(self,z_,z2=None): 
         #https://www.wolframalpha.com/input/?i2d=true&i=+norm%5C%2840%29+D%5B%5C%2840%29-cos%5C%2840%29a*Sqrt%5Bz%5D%5C%2841%29%5C%2841%29*a*Sqrt%5Bz%5D%5C%2844%29sin%5C%2840%29a*Sqrt%5Bz%5D%5C%2841%29*a*Sqrt%5Bz%5D%5C%2841%29%5C%2841%29%2C%7Bz%2C2%7D%5D+%5C%2841%29
-        const = 540 * (2 * np.pi) / 360
-        z = np.sqrt(z_ ) * 540 * (2 * np.pi) / 360
-        h1 = 4*z_**(3/2)
-        first = - const * np.cos(z) / h1 - const**2 * np.sin(z)/(2*z_) + z * ( const*np.sin(z) / h1 - const**2 * np.cos(z) / (4*z_)) 
-        second= - const * np.sin(z) / h1 + const**2 * np.cos(z)/(2*z_) + z * ( -const*np.cos(z) / h1 - const**2 * np.sin(z) / (4*z_))
-        return np.sqrt(first**2 + second**2)
+        #https://www.wolframalpha.com/input/?i2d=true&i=D%5B%5C%2840%29-cos%5C%2840%29a*Sqrt%5Bz%5D%5C%2841%29%5C%2841%29*a*Sqrt%5Bz%5D%5C%2844%29sin%5C%2840%29a*Sqrt%5Bz%5D%5C%2841%29*a*Sqrt%5Bz%5D%5C%2841%29%5C%2841%29%2Cz%5D
+        #https://www.wolframalpha.com/input/?i2d=true&i=+%5C%2840%29+D%5B%5C%2840%29-cos%5C%2840%29a*Sqrt%5Bz%5D%5C%2841%29%5C%2841%29*a*Sqrt%5Bz%5D%5C%2844%29sin%5C%2840%29a*Sqrt%5Bz%5D%5C%2841%29*a*Sqrt%5Bz%5D%5C%2841%29%5C%2841%29%2C%7Bz%2C2%7D%5D+%5C%2841%29
+        #https://mathepedia.de/Kruemmung.html 
+        a = 3 * np.pi 
+        y = np.sqrt(z_ ) * a
+        dz1 = 0.5 * a**2 *( np.sin(y)-np.cos(y)/y )
+        dz2 = 0.5 * a**2 *( np.cos(y)-np.sin(y)/y )
+        ddz1 = (a**4 / (4*y**3)) * ( y*np.sin(y) + (y**2 + 1)*np.cos(y) )
+        ddz2 = (a**4 / (4*y**3)) * ( y*np.cos(y) - (y**2 + 1)*np.sin(y) )
+        gauss = (dz1*ddz2-ddz1*dz2) / (dz1**2 + dz2**2)**(3/2)
+        
+        # h1 = 4*z_**(3/2)
+        # first = - const * np.cos(z) / h1 - const**2 * np.sin(z)/(2*z_) + z * (  const*np.sin(z) / h1 - const**2 * np.cos(z) / (4*z_)) 
+        # second= - const * np.sin(z) / h1 + const**2 * np.cos(z)/(2*z_) + z * ( -const*np.cos(z) / h1 - const**2 * np.sin(z) / (4*z_))
+        return  gauss #(first**2 + second**2)

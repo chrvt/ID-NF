@@ -113,7 +113,7 @@ class FFHQStyleGAN2DLoader(BaseImageLoader):
             scale_factor=scale_factor,
             n_bits=8,
             random_horizontal_flips=False,
-            gdrive_file_ids={"grid": "12QvzFg9ln9bXvdP1nUGPWqHVqGCBFodR", "train": "1Plel_nOIYUu3E-KKDJ9-yVWPp5HcaGFo", "test": "17NOhkhctMkPWvLOzR5L0WOYxAFlUebjd"},
+            gdrive_file_ids={"grid": "1HZvfuOkaXqIMtPX_hpCp3zzHrL3JtEUb", "train": "1Plel_nOIYUu3E-KKDJ9-yVWPp5HcaGFo", "test": "17NOhkhctMkPWvLOzR5L0WOYxAFlUebjd"},
         )  # For the 2D demo we don't want random flips, as they would essentially create a second disjoint manifold
 
     def latent_dim(self):
@@ -130,8 +130,8 @@ class FFHQStyleGAN64DLoader(BaseImageLoader):
             n_bits=8,
             random_horizontal_flips=False,
             gdrive_file_ids={
-                "x_train": "1DayM2MLczvmck9Nfdv_c5oYOD6GbRkGj",
-                "x_test": "1gJuOOm9x5sNytuKmYqZ83-ieicfJsXj5",
+                "train": "1TsrUWSCcuRjOsUSpCn_HvlzC-Cz3HOKS",
+                "test": "1gJuOOm9x5sNytuKmYqZ83-ieicfJsXj5",
                 "params_train": "1MmIAfT2uvAC7fuC92KxNRQJUAUxsnXZr",
                 "params_test": "1day5UUZBRxAfvQsmKxir8KL1RAYbsIY9",
             },

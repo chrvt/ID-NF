@@ -164,7 +164,7 @@ class HyperboloidSimulator(BaseSimulator):
         elif self._latent_distribution == 'unimodal':
             sig2 = 1 
             probs_theta = 1/(2*np.pi)
-            probs_v =  2*np.exp(-v/0.5) #np.sqrt(2*np.pi*sig2)*np.exp(-v**2/(2*sig2))
+            probs_v =  2*np.exp(-2*v) #np.sqrt(2*np.pi*sig2)*np.exp(-v**2/(2*sig2))
             probs = probs_v * probs_theta             
         return probs
     
@@ -188,9 +188,9 @@ class HyperboloidSimulator(BaseSimulator):
         
     def calculate_sigma_bound(self,v,theta):
         if self._latent_distribution == 'correlated':
-            bound = 2/((36*np.sin(theta-v-np.pi)**2 + 6*np.cos(theta-v-np.pi))*(np.cosh(v)**2+2*np.sinh(v)**2))
+            bound = 2/( (36*np.sin(theta-v-np.pi)**2 + 6*np.cos(theta-v-np.pi)) * ( 1 / (np.cosh(v)**2+np.sinh(v)**2) + 1/np.sinh(v)**2 ) )
         elif self._latent_distribution == 'unimodal':
-            bound = 8/(np.cosh(v)**2+np.sinh(v)**2)   
+            bound = (np.cosh(v)**2+np.sinh(v)**2) / 4  
         else: bound = 0
         return bound
 

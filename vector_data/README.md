@@ -1,6 +1,6 @@
 ### Instructions for vector data
 
-To estimte the ID of your vector dataset, use 
+To estimate the ID of your vector dataset, use 
 
 1. [my_vector_data_cluster.py](my_vector_data_cluster.py) which trains N NFs and calculates the singular values on K samples, 
 2. [estimate_d/estimate_d.py](estimate_d/estimate_d.py) which estimates the ID given the singular value evolution.
@@ -29,3 +29,13 @@ To estimte the ID of your vector dataset, use
 + Follow the instructions in the file [estimate_d/estimate_d.py](estimate_d/estimate_d.py)
 
 In case you have problems with setting up your data, do not hesitate to contact us.
+
+
+## Details for toy data
+
++ to train the toy examples of Table 1, we use the [Inflation-Deflation repository](https://github.com/chrvt/Inflation-Deflation). For convenience, we added the datasets into this repository. Use [vector_data/train_flow_toy.sh](vector_data/train_flow_toy.sh). Note, however, in the original paper we have used a non-equidistant sigma range as we did not have to re-train the models. In fact, we used sigmas = [0,1e-09, 5e-09, 1e-08, 5e-08, 1e-07, 5e-07,1e-06,5e-06,0.00001,0.00005,0.0001,0.0005,0.001,0.005,0.01,0.05,0.1,0.25,0.5,1.0,2.0, 3.0, 4.0,  6.0 , 8.0, 10.0]. This should, however, not lead to different results.
+
++ for the lollipop and S(D/2) experiments, please use [vector_data/train_flow_lolipop.sh](vector_data/train_flow_lolipop.sh) and [vector_data/train_flow_sphere.sh](vector_data/train_flow_sphere.sh), respectively
+
+
+In case you have problems with reproducing our results, do not hesitate to contact us.

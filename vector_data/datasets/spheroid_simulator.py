@@ -191,10 +191,10 @@ class SpheRoidSimulator(BaseSimulator):
         return probs
     
     def _density(self, z1, z2):
-        idx_hyp = np.where(z1 < 0 )[0]
-        idx_sph = np.where(z1 >=0 )[0] 
         probs = np.zeros(len(z1))
         if self._latent_distribution == 'correlated':
+            idx_hyp = np.where(z1 < 0 )[0]
+            idx_sph = np.where(z1 >=0 )[0] 
             probs[idx_sph] = 0.5 * self._density_sphere(z1[idx_sph],z2[idx_sph])
             probs[idx_hyp] = 0.5 * self._density_hyperboloid(z1[idx_hyp],z2[idx_hyp])
                         
@@ -255,26 +255,29 @@ class SpheRoidSimulator(BaseSimulator):
        
         def unimodal(u,v,mu,m):
             kappa = 6
-            return np.exp(kappa*np.cos((u-mu))) * np.exp(kappa*np.cos(v-m)) *(1/(2*np.pi*i0(kappa))**2)
+            return (1/3) * np.exp(kappa*np.cos((u-mu))) * np.exp(kappa*np.cos(v-m)) *(1/(2*np.pi*i0(kappa))**2)
        
         if self._latent_distribution == 'mixture':
             kappa, mu11, mu12, mu21, mu22, mu31, mu32 =6.0,  0, np.pi, -0.5, np.pi/2, 0.5, np.pi/2
-            bound = 2 * self._density(u_,v_) / ( unimodal(u_,v_,mu11,mu12) * ( circle_term(-u_,0,alpha=mu11,kappa=kappa) * gramterm1(u_) + circle_term(0,v_,alpha=mu12,kappa=kappa) * gramterm2(u_) )  
-                                                  +unimodal(u_,v_,mu21,mu22) * ( circle_term(-u_,0,alpha=mu21,kappa=kappa) * gramterm1(u_) + circle_term(0,v_,alpha=mu22,kappa=kappa) * gramterm2(u_) )  
-                                                  +unimodal(u_,v_,mu31,mu32) * ( circle_term(-u_,0,alpha=mu31,kappa=kappa) * gramterm1(u_) + circle_term(0,v_,alpha=mu32,kappa=kappa) * gramterm2(u_) )  
+            bound = 2 * self._density(u_,v_) / (   unimodal(u_,v_,mu11,mu12) * ( circle_term(-u_,0,alpha=mu11,kappa=kappa) / gramterm1(u_) + circle_term(0,v_,alpha=mu12,kappa=kappa) / gramterm2(u_) )  
+                                                  +unimodal(u_,v_,mu21,mu22) * ( circle_term(-u_,0,alpha=mu21,kappa=kappa) / gramterm1(u_) + circle_term(0,v_,alpha=mu22,kappa=kappa) / gramterm2(u_) )  
+                                                  +unimodal(u_,v_,mu31,mu32) * ( circle_term(-u_,0,alpha=mu31,kappa=kappa) / gramterm1(u_) + circle_term(0,v_,alpha=mu32,kappa=kappa) / gramterm2(u_) )  
                                                  )
         elif self._latent_distribution == 'correlated':
             kappa = self._kappa
-            bound = 2 / ( circle_term(u_,v_,alpha=np.pi,kappa=kappa,shift=0.3) * gramterm1(u_)  + circle_term(u_,v_,alpha=np.pi,kappa=kappa,shift=0) * gramterm2(u_) )
+            bound = 2 / ( circle_term(u_,v_,alpha=np.pi,kappa=kappa,shift=0.3) / gramterm1(u_)  + circle_term(u_,v_,alpha=np.pi,kappa=kappa,shift=0) / gramterm2(u_) )
         return bound
 
     def calculate_gauss_curvature(self, z1, z2):
+        ##https://mathworld.wolfram.com/One-SheetedHyperboloid.html
+        gauss = np.zeros(*z1.shape)
         idx_hyp = np.where(z1 < 0 )[0]
         idx_sph = np.where(z1 >=0 )[0] 
         
         z_hyp = z1[idx_hyp]
         
-        gauss_hyp =  1*np.cosh(z_hyp)
+        gauss[idx_hyp] =  1/ (1+2*np.sinh(np.abs(z_hyp))**2)**2 #   np.sinh(np.abs(z_hyp))
         # gauss_sph =  np.ones(len(idx_sph))
+        gauss[idx_sph] = 1
         
-        return np.sum(gauss_hyp+1) / len(z1)
+        return gauss

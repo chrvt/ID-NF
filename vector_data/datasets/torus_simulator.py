@@ -165,7 +165,7 @@ class TorusSimulator(BaseSimulator):
             return self._c+self._a*np.cos(theta)
         def unimodal(theta,phi,mu,m):
             kappa = 2
-            return np.exp(kappa*np.cos(theta-mu)+kappa*np.cos(phi-m))*(1/(2*np.pi*i0(kappa))**2) 
+            return (1/3)*np.exp(kappa*np.cos(theta-mu)+kappa*np.cos(phi-m))*(1/(2*np.pi*i0(kappa))**2) 
        
         if self._latent_distribution == 'mixture':
             kappa, mu11, mu12, mu21, mu22, mu31, mu32 = 2, 0.21, 2.85, 1.89, 6.18, 3.77, 1.56
@@ -179,4 +179,4 @@ class TorusSimulator(BaseSimulator):
         return bound
     
     def calculate_gauss_curvature(self,theta,phi):
-        return np.cos(theta)/(self._a*(self._c + self._a * np.cos(theta)) )
+        return np.cos(theta)/(self._c*(self._a + self._c * np.cos(theta)) )
