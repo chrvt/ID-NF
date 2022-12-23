@@ -3,7 +3,7 @@
 To estimte the ID of your vector dataset, use 
 
 1. [my_vector_data_cluster.py](my_vector_data_cluster.py) which trains N NFs and calculates the singular values on K samples, 
-2. [estimate_d.py](estimate_d.py) which estimates the ID given the singular value evolution.
+2. [estimate_d/estimate_d.py](estimate_d/estimate_d.py) which estimates the ID given the singular value evolution.
 
 ## Details for 1.
 + your data with name 'data_name' must be stored in "/data/data_name". The folder must contain a "train.npy" and "val.npy" numpy arrays of shape [n_samples,D] where n_samples reflects the number of training/ validation samples and D is the data dimensionality
@@ -26,7 +26,6 @@ To estimte the ID of your vector dataset, use
   - ID_samples ... number of samples to estimate ID on (must be <= batch size, otherwise evaluation part of the script must be modified accordingly)
 
 ## Details for 2.
-+ 
++ Follow the instructions in the file [estimate_d/estimate_d.py](estimate_d/estimate_d.py)
 
 In case you have problems with setting up your data, do not hesitate to contact us.
-s
