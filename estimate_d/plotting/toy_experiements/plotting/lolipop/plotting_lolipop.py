@@ -36,7 +36,6 @@ lolipop = LolipopSimulator()
 
 samples = lolipop.sample(N_smpls)
 
-# d_hat_smpls = lolipop.sample(n_smpls)
 
 d_hat_smpls = np.load('first_batch.npy')[n_start:n_smpls,:,0]
 d_hat =  np.load('d_hat.npy')[n_start:n_smpls]    
