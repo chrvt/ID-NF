@@ -3,7 +3,7 @@
 *Christian Horvat and Jean-Pascal Pfister 2022*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![NeurIPS](http://img.shields.io/badge/NeurIPS-2021-8B6DA0.svg)](https://proceedings.neurips.cc/paper/2021/hash/4c07fe24771249c343e70c32289c1192-Abstract.html)
+[![NeurIPS](https://proceedings.neurips.cc/paper_files/paper/2022/hash/4f918fa3a7c38b2d9b8b484bcc433334-Abstract-Conference.html)
 
 This is the official repository of the paper "Estimating the intrinsic dimensionality with Normalizing Flows". To reproduce our results from the paper or to use the method for your own data, follow the instructions below. 
 
