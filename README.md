@@ -19,5 +19,5 @@ In the paper, we tested our method on various toy and real data. For the image e
 For the manifolds and distributions displayed in Table 1, see [vector_data/toy_experiments](vector_data/toy_experiments). There you will find also the instructions for reproducing the experiments on the lolipop dataset and on S(D/2). 
 
 ### Acknowledgement
-For image data, we used the [Manifold Flow repository](https://github.com/johannbrehmer/manifold-flow) which is based on the [Neural Spline code base](https://github.com/bayesiains/nsf). For vector data, we used the [Inflation-Deflation repository](https://github.com/chrvt/Inflation-Deflation) which is based on this [Block Neural Autoregressive Flow implementation](https://github.com/kamenbliznashki/normalizing_flows).
+For image data, we used the [Manifold Flow repository](https://github.com/johannbrehmer/manifold-flow) which is based on the [Neural Spline code base](https://github.com/bayesiains/nsf). However, note that we use only the standard NF mode of Manifold Flows (Why? For convenience, I used to work with the code-base before). For vector data, we used the [Inflation-Deflation repository](https://github.com/chrvt/Inflation-Deflation) which is based on this [Block Neural Autoregressive Flow implementation](https://github.com/kamenbliznashki/normalizing_flows).
 
